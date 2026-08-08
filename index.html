@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NotesVault — Student Notes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header><div class="wrap nav">
+<a class="brand" href="#"><b>N</b> Notes<span>Vault</span></a>
+<nav><a href="#notes">Notes</a><a href="#about">About</a><button id="theme" class="ghost">☾</button><button id="adminBtn" class="primary">Admin</button></nav>
+</div></header>
+<main>
+<section class="hero wrap">
+<div><small>STUDENT NOTES LIBRARY</small><h1>Study smarter.<br><em>Find notes faster.</em></h1><p>Organized study material with one-click access. Search by subject, semester or title.</p>
+<div class="stats"><div><strong id="total">0</strong><small>Notes</small></div><div><strong id="subjects">0</strong><small>Subjects</small></div><div><strong>24/7</strong><small>Access</small></div></div></div>
+<div class="hero-art"><div class="art-head">NOTESVAULT <span>● ● ●</span></div><div class="art-row">▤ <b>Data Communication</b><i>CS601</i></div><div class="art-row">▤ <b>Programming</b><i>CS101</i></div><div class="art-row">▤ <b>Database Systems</b><i>CS403</i></div></div>
+</section>
+<section id="notes" class="wrap library">
+<div class="section-title"><div><small>LIBRARY</small><h2>Latest Notes</h2></div><button id="refresh" class="ghost">↻ Refresh</button></div>
+<div class="toolbar"><input id="search" placeholder="Search notes, subjects, semesters..."><select id="category"><option value="">All categories</option><option>Computer Science</option><option>Programming</option><option>Other</option></select></div>
+<div id="grid" class="grid"></div><div id="empty" class="empty hidden"><h3>No notes found</h3><p>Try another search.</p></div>
+</section>
+<section id="about" class="wrap about"><div><small>ABOUT</small><h2>Simple, focused, useful.</h2></div><p>NotesVault stores study metadata and monetized destination links. Your Google Drive files stay in your own Drive account.</p></section>
+</main>
+<footer><div class="wrap">© <span id="year"></span> NotesVault</div></footer>
+
+<div id="modal" class="overlay hidden"><div class="modal"><button class="close" id="close">×</button><div id="authBox">
+<small>ADMIN ACCESS</small><h2>Sign in</h2><p class="muted">Use your Supabase account.</p>
+<input id="email" type="email" placeholder="Email"><input id="password" type="password" placeholder="Password">
+<button id="login" class="primary full">Sign in</button><p id="authMsg" class="msg"></p>
+</div>
+<div id="dashboard" class="hidden">
+<div class="dash-top"><div><small>ADMIN DASHBOARD</small><h2>Manage Notes</h2></div><button id="logout" class="ghost">Logout</button></div>
+<form id="noteForm">
+<input id="noteId" type="hidden"><label>Title<input id="title" required maxlength="100"></label>
+<div class="two"><label>Subject<input id="subject" required maxlength="50" placeholder="CS601"></label><label>Semester<input id="semester" maxlength="40" placeholder="Semester 3"></label></div>
+<div class="two"><label>Category<select id="noteCategory"><option>Computer Science</option><option>Programming</option><option>Other</option></select></label><label>Description<input id="description" maxlength="180"></label></div>
+<label>Google Drive URL<input id="driveUrl" type="url" required placeholder="https://drive.google.com/..."></label>
+<label>GPLinks URL<input id="gplinkUrl" type="url" required placeholder="https://gplinks.co/..."></label>
+<p class="hint">The public Download button uses the GPLinks URL. Keep the original Drive URL for your own record.</p>
+<button class="primary full" id="saveNote">Save Note</button>
+<button type="button" class="ghost full hidden" id="cancelEdit">Cancel Edit</button>
+</form>
+<hr><div id="adminList"></div>
+</div></div></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script><script src="app.js"></script>
+</body></html>
