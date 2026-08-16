@@ -168,14 +168,16 @@ function render() {
     return matchesCategory && searchable.includes(q);
   });
 
-  $("#total").textContent = notes.length;
+  countTo("#total", notes.length);
 
-  $("#subjects").textContent =
+  countTo(
+    "#subjects",
     new Set(
       notes.map((n) =>
         String(n.subject || "").toLowerCase()
       )
-    ).size;
+    ).size
+  );
 
   $("#grid").innerHTML = list
     .map((n) => {
@@ -253,6 +255,54 @@ function render() {
     "hidden",
     list.length > 0
   );
+
+  if (list.length === 0 && (q || cat)) {
+    const empty = $("#empty");
+    empty.classList.remove("shake");
+    void empty.offsetWidth;
+    empty.classList.add("shake");
+  }
+
+  $("#clearSearch").classList.toggle(
+    "show",
+    q.length > 0
+  );
+}
+
+/* -------------------------
+   Count-up animation for stats
+------------------------- */
+
+function countTo(selector, target) {
+  const el = $(selector);
+  const from = Number(el.textContent) || 0;
+
+  if (from === target) {
+    el.textContent = target;
+    return;
+  }
+
+  const duration = 500;
+  const start = performance.now();
+
+  function tick(now) {
+    const progress = Math.min(
+      1,
+      (now - start) / duration
+    );
+
+    const value = Math.round(
+      from + (target - from) * progress
+    );
+
+    el.textContent = value;
+
+    if (progress < 1) {
+      requestAnimationFrame(tick);
+    }
+  }
+
+  requestAnimationFrame(tick);
 }
 
 /* -------------------------
@@ -568,8 +618,19 @@ $("#search").oninput = render;
 
 $("#category").onchange = render;
 
-$("#refresh").onclick =
-  loadNotes;
+$("#refresh").onclick = () => {
+  const icon = $("#refreshIcon");
+  icon.classList.remove("spin");
+  void icon.offsetWidth;
+  icon.classList.add("spin");
+  loadNotes();
+};
+
+$("#clearSearch").onclick = () => {
+  $("#search").value = "";
+  $("#search").focus();
+  render();
+};
 
 /* -------------------------
    Dark Mode
@@ -614,3 +675,63 @@ if (sb) {
 }
 
 loadNotes();
+
+/* -------------------------
+   Header shrink on scroll
+------------------------- */
+
+const headerEl = document.querySelector("header");
+
+window.addEventListener(
+  "scroll",
+  () => {
+    headerEl.classList.toggle(
+      "scrolled",
+      window.scrollY > 8
+    );
+  },
+  { passive: true }
+);
+
+/* -------------------------
+   Button ripple effect
+------------------------- */
+
+document.addEventListener("click", (e) => {
+  const btn = e.target.closest(".primary,.ghost");
+
+  if (!btn) return;
+
+  const rect = btn.getBoundingClientRect();
+  const size = Math.max(rect.width, rect.height);
+
+  const ripple = document.createElement("span");
+  ripple.className = "ripple";
+  ripple.style.width = ripple.style.height = size + "px";
+  ripple.style.left = e.clientX - rect.left - size / 2 + "px";
+  ripple.style.top = e.clientY - rect.top - size / 2 + "px";
+
+  btn.appendChild(ripple);
+
+  ripple.addEventListener("animationend", () => ripple.remove());
+});
+
+/* -------------------------
+   Scroll reveal
+------------------------- */
+
+const revealObserver = new IntersectionObserver(
+  (entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add("in-view");
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  },
+  { threshold: 0.15 }
+);
+
+document
+  .querySelectorAll(".reveal")
+  .forEach((el) => revealObserver.observe(el));
